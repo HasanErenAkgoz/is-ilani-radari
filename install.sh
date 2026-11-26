@@ -12,10 +12,14 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORTALS=(kariyernet-search youthall-search)
+COMMUNITY_PORTALS=(freehire-search linkedin-search)
+COMMUNITY_ZIP="https://github.com/ai-job-search-dev/community-portals/archive/refs/heads/main.zip"
 
 FORCE=0
 DO_CONFIG=0
 DO_PERMISSIONS=0
+DO_COMMUNITY=0
+COMMUNITY_DIR=""
 DRY_RUN=0
 CONFIG_DIR="${IS_ILANI_RADARI_CONFIG_DIR:-$HOME/.config/is-ilani-radari}"
 PYTHON_BIN="${PYTHON:-}"
@@ -32,6 +36,10 @@ portallarını kopyalar.
 Seçenekler:
   --config            ~/.config/is-ilani-radari/people.json dosyasını (yoksa) örnekten
                       oluşturur ve scheduled-task/SKILL.md dosyasını şablondan üretir.
+  --community         ai-job-search-dev/community-portals deposundan freehire-search ve
+                      linkedin-search portallarını da kurar (upstream 2026-11'den beri
+                      portal içermez). linkedin-search kapalı (enabled: false) gelir:
+                      LinkedIn otomatik erişimi kullanım koşullarında yasaklar.
   --permissions       Her klonda .claude/settings.json "allow" listesine ve
                       tools/security_guards.py ALLOWED_PERMISSIONS kümesine iki portalın
                       `bun run` iznini ekler (zaten varsa dokunmaz). Gözetimsiz
@@ -68,6 +76,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --config) DO_CONFIG=1 ;;
     --permissions) DO_PERMISSIONS=1 ;;
+    --community) DO_COMMUNITY=1 ;;
     --force) FORCE=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --python)
@@ -96,12 +105,22 @@ fi
 # ---------------------------------------------------------------------------
 
 # Any python3 is enough for the small JSON/text edits this script makes.
+# Prefers --python / PYTHON; skips stubs (macOS developer-tools stub, Windows Store alias).
 helper_python() {
-  if command -v python3 >/dev/null 2>&1; then
-    command -v python3
-  else
-    die "python3 bulunamadı (yapılandırma adımları için gerekli)"
+  local c p
+  if [ -n "$PYTHON_BIN" ] && "$PYTHON_BIN" -c 'pass' >/dev/null 2>&1; then
+    printf '%s\n' "$PYTHON_BIN"; return
   fi
+  for c in python3.13 python3.12 python3.11 python3.10 python3 python; do
+    p="$(command -v "$c" 2>/dev/null || true)"
+    if [ -n "$p" ] && "$p" -c 'pass' >/dev/null 2>&1; then
+      printf '%s\n' "$p"; return
+    fi
+  done
+  for p in "$HOME"/.local/bin/python3.1[0-9]; do
+    if [ -x "$p" ] && "$p" -c 'pass' >/dev/null 2>&1; then printf '%s\n' "$p"; return; fi
+  done
+  die "çalışan bir Python bulunamadı (--python ile yol verin)"
 }
 
 python_ok() {
@@ -151,11 +170,17 @@ install_portals() {
   [ -f "$clone/.claude/skills/job-scraper/SKILL.md" ] \
     || die "$clone bir ai-job-search klonu gibi görünmüyor (.claude/skills/job-scraper/SKILL.md yok)"
   skills="$clone/.agents/skills"
-  [ -d "$skills" ] || die "$skills yok; upstream ai-job-search klonu mu?"
+  [ -d "$skills" ] || run mkdir -p "$skills"   # upstream 2026-11'den beri portal klasörü boş gelir
 
   log "== $clone"
-  for portal in "${PORTALS[@]}"; do
+  local all=("${PORTALS[@]}")
+  if [ "$DO_COMMUNITY" -eq 1 ]; then
+    fetch_community
+    all+=("${COMMUNITY_PORTALS[@]}")
+  fi
+  for portal in "${all[@]}"; do
     src="$SCRIPT_DIR/portals/$portal"
+    [ -d "$src" ] || src="$COMMUNITY_DIR/portals/global/$portal"
     dest="$skills/$portal"
     [ -f "$src/SKILL.md" ] || die "paket eksik: $src"
     if [ -e "$dest" ]; then
@@ -182,6 +207,17 @@ install_portals() {
   fi
 }
 
+fetch_community() {
+  [ -n "$COMMUNITY_DIR" ] && return
+  local tmp
+  tmp="$(mktemp -d "${TMPDIR:-/tmp}/iir-community.XXXXXX")"
+  log "  community-portals indiriliyor…"
+  curl -fsSL -o "$tmp/cp.zip" "$COMMUNITY_ZIP" || die "community-portals indirilemedi (internet bağlantısı?)"
+  ( cd "$tmp" && unzip -q cp.zip ) || die "community-portals arşivi açılamadı (unzip gerekli)"
+  COMMUNITY_DIR="$tmp/community-portals-main"
+  [ -d "$COMMUNITY_DIR/portals/global" ] || die "community-portals yapısı beklenenden farklı: portals/global yok"
+}
+
 add_permissions() {
   local clone="$1" py
   py="$(helper_python)"
@@ -189,7 +225,9 @@ add_permissions() {
     log "  [dry-run] izinler eklenecek: $clone/.claude/settings.json, $clone/tools/security_guards.py"
     return
   fi
-  "$py" - "$clone" "${PORTALS[@]}" <<'PYEOF'
+  local perm=("${PORTALS[@]}")
+  [ "$DO_COMMUNITY" -eq 1 ] && perm+=("${COMMUNITY_PORTALS[@]}")
+  "$py" - "$clone" "${perm[@]}" <<'PYEOF'
 import json, re, sys
 from pathlib import Path
 

@@ -12,6 +12,36 @@
 
 ▶️ **[Tanıtım videosunu izle (40 sn)](assets/tanitim.mp4)**
 
+## Kolay kurulum — bilgisayar bilgisi gerekmez
+
+Kurulumu Claude sizin için yapar. Siz yalnızca adayların adını, e-postasını ve CV'sini verirsiniz.
+
+**1. Claude uygulamasını indirin.** [claude.ai/download](https://claude.ai/download) adresinden
+masaüstü uygulamasını kurun ve giriş yapın. Claude Code'u kapsayan bir plan gerekir (Pro veya üstü).
+
+**2. Gmail'i bağlayın.** Uygulamada **Ayarlar → Bağlayıcılar (Connectors) → Gmail → Bağlan**.
+İlan mailleri bu hesaptan gönderilir.
+
+**3. Claude'a tek cümle yazın.** Uygulamada **Code** sekmesine geçin, yeni bir oturum açın
+(klasör olarak **kendi kullanıcı klasörünüzü** seçin — Finder'da ev simgesi olan, adınızı taşıyan klasör) ve şunu yapıştırın:
+
+```text
+https://github.com/HasanErenAkgoz/is-ilani-radari adresindeki paketi indir ve içindeki KURULUM.md dosyasını adım adım uygula.
+```
+
+Claude size kaç kişi için tarama yapılacağını, adlarını ve e-postalarını sorar. Ardından bir
+klasör açar; her kişinin CV'sini kendi klasörüne sürükleyip bırakırsınız. Gerisini (programlar,
+profiller, zamanlanmış görev, deneme taraması) Claude kurar. Toplam 15-20 dakika sürer.
+
+> **İzin pencereleri:** Kurulum ve ilk tarama sırasında Claude bazı işlemler için izin ister.
+> **İzin ver** / **Her zaman izin ver** seçin.
+>
+> **Ne zaman çalışır?** Hafta içi her gün 09:00 ve 17:00'de. Bilgisayar ve Claude uygulaması
+> açık olmalıdır; o saatte kapalıysa uygulama açıldığında çalışır.
+>
+> **Sonradan değişiklik:** Claude'a "İş İlanı Radarı'na yeni aday ekle", "Deniz'in CV'sini
+> güncelle" veya "taramayı durdur" yazmanız yeterli.
+
 ## Ne yapar?
 
 - **Zamanlanmış tarama:** Claude masaüstü uygulamasında hafta içi her gün 09:00 ve 17:00'de çalışır (cron `0 9,17 * * 1-5`). Elle tetiklenirse hafta sonu kendini durdurur.
@@ -21,7 +51,7 @@
 - **Boş mail yok:** Uygun ilan yoksa mail gönderilmez. "İlan yok", özet ya da hata maili de atılmaz.
 - **Tekrar gönderim engeli:** Gönderilen ilanlar repo dışındaki bir gönderim kaydına (`sent_<key>.json`) yazılır. Aynı ilan başka portalda ya da yeniden yayınlansa bile ikinci kez gönderilmez.
 - **Düzenli e-posta:** Konu satırında tarih, Sabah/Akşam, ilan sayısı ve yüksek uyum sayısı yer alır. Gövde bir HTML tablodur: uyum, pozisyon, şirket, konum, son başvuru, link. Her ilanın altında kısa bir gerekçe ve ⚠ uyarılar bulunur. Recruiter ve ekip için LinkedIn arama linkleri ve gerekirse portal sağlık notu da eklenir.
-- **Türk portalları:** `kariyernet-search` (Kariyer.net) ve `youthall-search` (Youthall) portal skill'leri upstream'deki LinkedIn/Jobindex portallarıyla aynı yapıdadır: Bun CLI, testler, `enabled:` bayrağı.
+- **Portallar:** Kariyer.net ve Youthall bu paketle gelir (Bun CLI + testler). Freehire ve LinkedIn, ai-job-search'ün resmi [community-portals](https://github.com/ai-job-search-dev/community-portals) deposundan kurulur. LinkedIn otomatik erişimi kullanım koşullarında yasakladığı için **kapalı** gelir; açmak sizin tercihinizdir. Portal skill'i olmayan siteler için `/scrape` internet aramasıyla devam eder.
 - **Güvenlik sınırı:** İlan metinleri güvenilmeyen veri sayılır. İçlerindeki talimatlara uyulmaz, başvuru yapılmaz, form doldurulmaz, listedeki adresler dışında kimseye mesaj atılmaz.
 
 ## Gereksinimler
@@ -32,7 +62,7 @@
 - **Python 3.10 veya üstü.** Upstream'in `tools/*.py` betikleri 3.10'dan eski sürümlerde çalışmaz. macOS'taki sistem `python3` 3.9 olabilir. Öyleyse yeni bir Python kurun ve kurulumda `--python` ile gösterin.
 - `git` ve bash (macOS'taki bash 3.2 yeterli).
 
-## Kurulum
+## Elle kurulum (ileri kullanıcılar)
 
 ### 1. Her aday için upstream'i klonlayın
 
@@ -51,10 +81,12 @@ git clone https://github.com/ai-job-search-dev/ai-job-search.git ai-job-search-e
 ```bash
 git clone <bu-deponun-adresi> is-ilani-radari
 cd is-ilani-radari
-./install.sh --permissions ~/Projeler/ai-job-search-deniz ~/Projeler/ai-job-search-ece
+./install.sh --community --permissions ~/Projeler/ai-job-search-deniz ~/Projeler/ai-job-search-ece
 ```
 
 `install.sh` şunları yapar:
+
+- `--community` verilirse Freehire ve LinkedIn portallarını community-portals deposundan indirip kurar (upstream çatı Kasım 2026'dan beri portal içermez). LinkedIn kapalı (`enabled: false`) gelir.
 
 - `portals/kariyernet-search` ve `portals/youthall-search` klasörlerini her klonun `.agents/skills/` klasörüne kopyalar. `/scrape` portalları buradan kendisi bulur, ayrıca kayıt gerekmez.
 - `--permissions` verilirse iki portalın `bun run` iznini klonun `.claude/settings.json` "allow" listesine ve `tools/security_guards.py` içindeki `ALLOWED_PERMISSIONS` kümesine ekler. Upstream bu iki listenin birebir eşleşmesini denetler. Gözetimsiz görevin izin sormadan çalışması için bu adım gerekir. İsterseniz bu iki satırı elle de ekleyebilirsiniz.
@@ -63,7 +95,7 @@ cd is-ilani-radari
 Ardından her klonda upstream'in bağımlılık kurulumunu çalıştırın. Bu iki portalın çalışma zamanı bağımlılığı yok; adım yalnızca TypeScript tiplerini kurar:
 
 ```bash
-cd ~/Projeler/ai-job-search-deniz && python3 tools/install_portal_clis.py
+cd ~/Projeler/ai-job-search-deniz && "$(command -v python3.12)" tools/install_portal_clis.py   # Python ≥ 3.10
 ```
 
 **Bir portalı kapatmak için** o klondaki `.agents/skills/<portal>/SKILL.md` dosyasının başlığında `enabled: false` yazın. Portal kurulu kalır ama `/scrape` onu atlar.
@@ -138,6 +170,8 @@ Bu komut `~/.config/is-ilani-radari/people.json` dosyasını (yoksa) `people.exa
 ```
 is-ilani-radari/
 ├── README.md
+├── KURULUM.md                      Claude'un uyguladığı rehberli kurulum
+├── CLAUDE.md                       Claude'u KURULUM.md'ye yönlendirir
 ├── LICENSE                         MIT + NOTICE (upstream atfı)
 ├── install.sh                      portal kurulumu, izinler, yapılandırma
 ├── people.example.json             örnek kişi listesi
