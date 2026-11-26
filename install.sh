@@ -13,7 +13,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORTALS=(kariyernet-search youthall-search)
 COMMUNITY_PORTALS=(freehire-search linkedin-search)
-COMMUNITY_ZIP="https://github.com/ai-job-search-dev/community-portals/archive/refs/heads/main.zip"
+COMMUNITY_ZIP="https://github.com/ai-job-search-dev/community-portals/archive/HEAD.zip"
 
 FORCE=0
 DO_CONFIG=0
@@ -217,7 +217,7 @@ fetch_community() {
   log "  community-portals indiriliyor…"
   curl -fsSL -o "$tmp/cp.zip" "$COMMUNITY_ZIP" || die "community-portals indirilemedi (internet bağlantısı?)"
   ( cd "$tmp" && unzip -q cp.zip ) || die "community-portals arşivi açılamadı (unzip gerekli)"
-  COMMUNITY_DIR="$tmp/community-portals-main"
+  COMMUNITY_DIR="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
   [ -d "$COMMUNITY_DIR/portals/global" ] || die "community-portals yapısı beklenenden farklı: portals/global yok"
 }
 

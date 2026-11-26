@@ -61,8 +61,9 @@ Komutlarda bu adları her zaman **mutlak yola** çevir ve çift tırnak içinde 
    "Şimdi değil" demesini söyle.)
 2. **Paket:** `PAKET` yoksa indir. `git` varsa
    `git clone https://github.com/HasanErenAkgoz/is-ilani-radari.git "PAKET"`;
-   yoksa `https://github.com/HasanErenAkgoz/is-ilani-radari/archive/refs/heads/main.zip`
-   adresini `curl -fsSL` ile geçici bir dosyaya indir, aç ve klasörü `PAKET` olarak adlandır.
+   yoksa `https://github.com/HasanErenAkgoz/is-ilani-radari/archive/HEAD.zip`
+   adresini `curl -fsSL` ile geçici bir dosyaya indir ve aç; zipin içinde adı değişken tek bir üst
+   klasör olur (ör. `is-ilani-radari-<kod>/`), onu `PAKET` olarak taşı.
    `PAKET` zaten varsa ve git deposuysa `git -C "PAKET" pull` ile güncelle.
 3. **Bun** (`bun --version`, ayrıca `~/.bun/bin/bun`): yoksa kur —
    macOS/Linux `curl -fsSL https://bun.sh/install | bash`,
@@ -111,7 +112,9 @@ Her aday için `KLON = KOK/adaylar/<key>`:
 
 1. **Çatıyı indir:** `KLON` yoksa
    `git clone https://github.com/ai-job-search-dev/ai-job-search.git "KLON"`
-   (git yoksa `https://github.com/ai-job-search-dev/ai-job-search/archive/refs/heads/main.zip`).
+   (git yoksa `https://github.com/ai-job-search-dev/ai-job-search/archive/HEAD.zip` indir, aç ve
+   içindeki tek üst klasörü — ör. `ai-job-search-<kod>/` — `KLON` olarak taşı; upstream'in ana dalı
+   `master`'dır, dal adı yazan zip linkleri kullanma).
    Git varsa kişisel veri yanlışlıkla herkese açık bir yere gitmesin diye
    `git -C "KLON" remote set-url --push origin DISABLED` çalıştır.
 2. **CV'leri kopyala:** `KOK/CV-buraya/<Ad>/` içindekileri `KLON/documents/cv/`'ye
