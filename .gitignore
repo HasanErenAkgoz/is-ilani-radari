@@ -1,0 +1,6 @@
+node_modules/
+bun.lock
+people.json
+sent_*.json
+scheduled-task/SKILL.md
+.DS_Store

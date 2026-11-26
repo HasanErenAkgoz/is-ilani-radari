@@ -1,0 +1,18 @@
+[
+  {
+    "key": "deniz",
+    "name": "Deniz",
+    "email": "deniz@example.com",
+    "repo_path": "~/Projeler/ai-job-search-deniz",
+    "greeting": "Merhaba Deniz,",
+    "notes": ""
+  },
+  {
+    "key": "ece",
+    "name": "Ece",
+    "email": "ece@example.com",
+    "repo_path": "~/Projeler/ai-job-search-ece",
+    "greeting": "Merhaba Ece,",
+    "notes": "Konum: Ankara ve Eskişehir'de hibrit/ofis uygundur, bunların dışında yalnızca tam uzaktan. Aday ön lisans mezunu, giriş seviyesindedir: 3+ yıl deneyim şartı olan ilanları Low/⚠ say. İngilizce B2: akıcı/C1 şartı ⚠ uyarıdır, eleme değil. kariyernet-search için her çağrıya tek düz terim ver (tırnak/OR yok), şehir olarak Ankara ve Eskişehir için ayrı çağır."
+  }
+]
