@@ -26,12 +26,12 @@ masaüstü uygulamasını kurun ve giriş yapın. Claude Code'u kapsayan bir pla
 (klasör olarak **kendi kullanıcı klasörünüzü** seçin — Finder'da ev simgesi olan, adınızı taşıyan klasör) ve şunu yapıştırın:
 
 ```text
-https://github.com/HasanErenAkgoz/is-ilani-radari adresindeki paketi indir ve içindeki KURULUM.md dosyasını adım adım uygula.
+https://github.com/HasanErenAkgoz/is-ilani-radari paketini ev klasörümde IsIlaniRadari/is-ilani-radari klasörüne indir ve içindeki KURULUM.md dosyasını adım adım uygula.
 ```
 
 Claude size kaç kişi için tarama yapılacağını, adlarını ve e-postalarını sorar. Ardından bir
 klasör açar; her kişinin CV'sini kendi klasörüne sürükleyip bırakırsınız. Gerisini (programlar,
-profiller, zamanlanmış görev, deneme taraması) Claude kurar. Toplam 15-20 dakika sürer.
+profiller, zamanlanmış görev, deneme taraması) Claude kurar. Aday başına ~10-15 dakika sürer.
 
 > **İzin pencereleri:** Kurulum ve ilk tarama sırasında Claude bazı işlemler için izin ister.
 > **İzin ver** / **Her zaman izin ver** seçin.

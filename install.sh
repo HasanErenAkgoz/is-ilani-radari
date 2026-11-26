@@ -20,6 +20,7 @@ DO_CONFIG=0
 DO_PERMISSIONS=0
 DO_COMMUNITY=0
 COMMUNITY_DIR=""
+COMMUNITY_TMP=""
 DRY_RUN=0
 CONFIG_DIR="${IS_ILANI_RADARI_CONFIG_DIR:-$HOME/.config/is-ilani-radari}"
 PYTHON_BIN="${PYTHON:-}"
@@ -211,6 +212,8 @@ fetch_community() {
   [ -n "$COMMUNITY_DIR" ] && return
   local tmp
   tmp="$(mktemp -d "${TMPDIR:-/tmp}/iir-community.XXXXXX")"
+  COMMUNITY_TMP="$tmp"
+  trap 'rm -rf "$COMMUNITY_TMP"' EXIT
   log "  community-portals indiriliyor…"
   curl -fsSL -o "$tmp/cp.zip" "$COMMUNITY_ZIP" || die "community-portals indirilemedi (internet bağlantısı?)"
   ( cd "$tmp" && unzip -q cp.zip ) || die "community-portals arşivi açılamadı (unzip gerekli)"

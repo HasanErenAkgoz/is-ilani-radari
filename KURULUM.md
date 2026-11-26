@@ -1,5 +1,9 @@
 # KURULUM.md — Claude için rehberli kurulum
 
+> **Claude, önce şunu yap:** Bu dosyayı GitHub'da ya da geçici bir yerde okuyorsan, paketi
+> doğrudan Adım 1.2'deki yere (`~/IsIlaniRadari/is-ilani-radari`) indir ve oradaki KURULUM.md'yi
+> izle; paketi iki kez indirme.
+>
 > **Bu dosya Claude içindir.** Kullanıcı bunu Claude masaüstü uygulamasında (Code sekmesi)
 > Claude'a okutur; Claude aşağıdaki adımları sırayla uygular. Kullanıcının terminal veya
 > dosya düzenlemesi bilmesi gerekmez.
@@ -46,7 +50,7 @@ Komutlarda bu adları her zaman **mutlak yola** çevir ve çift tırnak içinde 
    kaldığı yerden sürer (Adım 1–4 tekrar çalıştırılmaya dayanıklıdır).
 4. Kullanıcıya kısa bir hoş geldin mesajı ver: ne kurulacağını 3 maddede anlat
    (hafta içi 09:00 ve 17:00'de ilan taraması, CV'ye göre puanlama, yalnızca uygun ve yeni
-   ilanların adaya maili) ve kurulumun ~15-20 dakika süreceğini söyle.
+   ilanların adaya maili) ve kurulumun aday başına ~10-15 dakika (toplam ~25-40 dakika) süreceğini söyle.
 
 ## Adım 1 — Programlar (soru sormadan)
 
@@ -85,7 +89,7 @@ Kullanıcıya sor:
 
 Her kişiye bir `key` üret: **yalnızca ilk adın** küçük harfli, Türkçe karakterleri
 sadeleştirilmiş ASCII hali (ör. "Şule Nur Yılmaz" → `sule`); çakışırsa sonuna sayı ekle
-(`sule2`). Klasör adlarında da `<Ad>` olarak ilk adı kullan (boşluksuz). E-postanın geçerli
+(`sule2`). CV klasörünün adı (`<Ad>`) kullanıcının göreceği addır: ilk ad, Türkçe harfleriyle (ör. `Şule`). Aday klasörü ise `key` olur (ASCII, ör. `adaylar/sule`). E-postanın geçerli
 biçimde olduğunu kontrol et; `@example.com` gibi örnek adresleri kabul etme (görev onları
 atlar); şüpheliyse tekrar sor. Adları ve e-postaları kullanıcıya geri okuyup onay al.
 
@@ -140,26 +144,36 @@ Her aday için `KLON = KOK/adaylar/<key>`:
      makul bir varsayılan yaz. Maaş sorma.
    - LinkedIn dışa aktarımı veya referans mektubu yoksa `02-behavioral-profile.md`'yi zorla
      doldurma; olduğu gibi bırak.
+   - **Doldurulacak dosyalar** (yer tutucu metinleri tamamen değiştir; yalnız küçük düzeltme
+     değil): `CLAUDE.md`, `.claude/skills/job-application-assistant/01-candidate-profile.md`,
+     `04-job-evaluation.md`, `.claude/skills/job-scraper/search-queries.md`.
+     **Dokunma:** `02`, `05`, `06`, `07` profil dosyaları ve `cv/main_example.tex` (başvuru
+     belgesi üretimi bu otomasyonun parçası değil).
+   - Profil dili **Türkçe** (aksi istenmedikçe); arama terimleri Türkçe, gerekirse İngilizce eşleriyle.
    - Dosya değişikliklerini tek mesajda kısa özetleyip bir kez onay al.
    - Pazar **Türkiye**, iş dili Türkçe + İngilizce. Adım 2'deki şehir/uzaktan tercihini konum
      kuralı olarak `04-job-evaluation.md`'ye yaz.
    - `.claude/skills/job-scraper/search-queries.md` dosyasına adayın CV'sine uygun
      **Türkçe düz arama terimleri** ekle (ör. "veri analisti", "muhasebe uzmanı"); tırnak/OR yok.
-7. **Sağlık kontrolü:** `KLON` içinde job-scraper `SKILL.md`'deki portal sağlık kontrolünü
-   (`/scrape health`, Step 4.75) çalıştır; açık portalların en az biri çalışır olmalı. Hepsi
+7. **Sağlık kontrolü (yalnızca ilk adayda, bir kez):** `KLON` içinde job-scraper `SKILL.md`'deki
+   portal sağlık kontrolünü (`/scrape health`, Step 4.75) çalıştır; portallar her adayda aynı
+   olduğu için diğer adaylarda tekrarlama. Açık portalların en az biri çalışır olmalı; hepsi
    bozuksa kullanıcıya söyle ama kuruluma devam et (siteler geçici engelleyebilir).
+   Freehire bir toplayıcıdır: ilan linklerinin başka sitelere (şirket sayfaları, LinkedIn)
+   gitmesi normaldir, bunu "bozuk" sayma.
 
 Her adayın sonunda kullanıcıya tek satır özet ver ("Deniz hazır: Veri Analisti, İstanbul/uzaktan,
 4 portal açık.").
 
 ## Adım 5 — Kişi listesi ve görev metni
 
-1. `bash "PAKET/install.sh" --config --python "PY"` çalıştır (`YAPILANDIRMA/people.json` ve
+1. `bash "PAKET/install.sh" --config --python "PY"` çalıştır (yapılandırma klasörünü değiştirmek
+   gerekirse `--config-dir DIR` ya da `IS_ILANI_RADARI_CONFIG_DIR`) (`YAPILANDIRMA/people.json` ve
    `PAKET/scheduled-task/SKILL.md` oluşur). Çalışmazsa ikisini kendin üret: şablon
    `PAKET/scheduled-task/SKILL.template.md` içinde `{{CONFIG_DIR}}` → `YAPILANDIRMA`,
    `{{PYTHON}}` → `PY`.
 2. `people.json`'u Adım 2–4'teki gerçek bilgilerle **yeniden yaz** (örnek kayıtlar kalmasın):
-   her aday için `key`, `name`, `email`, `repo_path` (= `KLON`, mutlak yol), `greeting`
+   her aday için `key`, `name` (ilk ad, Türkçe harfleriyle), `email`, `repo_path` (= `KLON`, mutlak yol), `greeting`
    ("Merhaba <Ad>,"), `notes` (şehir/uzaktan tercihi ve CV'den çıkan özel durumlar, ör.
    "giriş seviyesi: 3+ yıl şartı olan ilanlar Low"). Dosyayı `PY` ile UTF-8 olarak yaz ve
    geri okuyup geçerli JSON olduğunu doğrula.
@@ -182,8 +196,10 @@ Onaylanınca `create_scheduled_task` çağır:
 
 ## Adım 7 — Deneme çalıştırması
 
-Kullanıcıya sor: "Şimdi bir deneme taraması yapayım mı? Uygun ilan çıkarsa adaylara **gerçek
-mail** gider." Evet derse:
+Deneme çalıştırması **gereklidir**: görev bir çalışma klasörüne bağlı olmadığından, sonraki
+gözetimsiz taramaların izin sormadan ilerlemesini sağlayan şey bu ilk çalıştırmada verilen
+"Her zaman izin ver" onaylarıdır. Kullanıcıya bunu sade dille söyle ve sor: "Şimdi ilk taramayı
+başlatayım mı? Uygun ilan çıkarsa adaylara **gerçek mail** gider." Evet derse:
 1. `run_scheduled_task` ile görevi bir kez başlat.
 2. Kullanıcıya: "Tarama ayrı bir oturumda başladı (sol listede görebilirsiniz). İzin soran
    pencerelerde **Her zaman izin ver** seçin; böylece sonraki taramalar sizi rahatsız etmeden
