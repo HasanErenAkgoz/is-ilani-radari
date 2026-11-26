@@ -10,7 +10,7 @@
 > kept outside the repos prevents re-sends. The package also adds two Turkish
 > job-portal skills, **Kariyer.net** and **Youthall**. Docs below are in Turkish.
 
-<!-- video: assets/tanitim.mp4 -->
+▶️ **[Tanıtım videosunu izle (40 sn)](assets/tanitim.mp4)**
 
 ## Ne yapar?
 
