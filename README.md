@@ -10,7 +10,7 @@
 > kept outside the repos prevents re-sends. The package also adds two Turkish
 > job-portal skills, **Kariyer.net** and **Youthall**. Docs below are in Turkish.
 
-▶️ **[Tanıtım videosunu izle (52 sn, kurulum dahil)](assets/tanitim.mp4)**
+▶️ **[Tanıtım videosunu izle (54 sn, kurulum dahil)](assets/tanitim.mp4)**
 
 ## Kolay kurulum — bilgisayar bilgisi gerekmez
 
