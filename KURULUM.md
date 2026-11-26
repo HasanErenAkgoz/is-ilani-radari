@@ -199,7 +199,10 @@ Onaylanınca `create_scheduled_task` çağır:
 
 ## Adım 7 — Deneme çalıştırması
 
-Deneme çalıştırması **gereklidir**: görev bir çalışma klasörüne bağlı olmadığından, sonraki
+Görev, oluşturulduğu bu oturumun **klasöründe ve izin modunda** kaydedilir (`create_scheduled_task`
+sonucu hangi modda kaydedildiğini söyler; kullanıcıya bunu tek cümleyle aktar). Oturum "Otomatik"
+(Auto) moddaysa taramalar izin sormadan çalışır; değilse ilk çalıştırmada izin pencereleri çıkar.
+Deneme çalıştırması **gereklidir**: görev aday klasörlerinde çalışmadığından, sonraki
 gözetimsiz taramaların izin sormadan ilerlemesini sağlayan şey bu ilk çalıştırmada verilen
 "Her zaman izin ver" onaylarıdır. Kullanıcıya bunu sade dille söyle ve sor: "Şimdi ilk taramayı
 başlatayım mı? Uygun ilan çıkarsa adaylara **gerçek mail** gider." Evet derse:
